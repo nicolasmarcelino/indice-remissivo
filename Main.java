@@ -3,14 +3,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
      public static void main(String[] args) {
           String caminho = "C:\\Projects\\indice-remissivo\\texto.txt";
 
-          ArvoreBinariaBusca arvore = new ArvoreBinariaBusca();
+          Hash tabela = new Hash();
 
           int counter = 0;
 
@@ -26,10 +24,7 @@ public class Main {
                     String[] palavras_da_linha = linha_normalizada.split(" ");
 
                     for (String palavra : palavras_da_linha) {
-                         if (palavra.startsWith("p")) {
-                              arvore.insere(palavra, (counter+1));
-                         }
-                         
+                         tabela.insere(palavra, (counter + 1));
                     }
 
                     // Avança para a próxima linha
@@ -42,7 +37,8 @@ public class Main {
                System.out.println("Erro.");
           }
 
-          arvore.imprimeEmOrdem();
+          String[] palavrasIndice = { "calvo", "amigo", "chuva", "pré-anuncio", "beija-flor" };
+          gerarIndiceRemissivo(tabela, palavrasIndice);
      }
 
      public static String normaliza(String linha) {
@@ -61,20 +57,18 @@ public class Main {
           return txt_normalizado;
      }
 
-     public static void adicionarPalavra(List<Palavra> lista, String termo, int posicao) {
-          // Recebe a palavra da linha
-          for (Palavra p : lista) {
-               // Já existe na lista/árvore?
-               if (p.termo.equals(termo)) {
-                    // Se sim, adiciona apenas a ocorrência
-                    p.adcOcorrencia(posicao);
-                    return;
+     public static void gerarIndiceRemissivo(Hash tabela, String[] palavrasIndice) {
+          for (String termoOriginal : palavrasIndice) {
+               String termoNormalizado = normaliza(termoOriginal);
+               Palavra p = tabela.busca(termoNormalizado);
+
+               if (p != null) {
+                    System.out.print(termoOriginal + " ");
+                    p.ocorrencias.imprimirLista();
+               } else {
+                    System.out.println(termoOriginal + " ---");
                }
           }
-
-          // Não existe na lista/árvore? Cria nova
-          Palavra nova = new Palavra(termo);
-          nova.adcOcorrencia(posicao);
-          lista.add(nova);
      }
+
 }
