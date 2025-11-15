@@ -1,6 +1,9 @@
-import java.util.NoSuchElementException;
-
 public class ListaEncadeada {
+
+     /*
+      * TAD em grande parte reutilizado do disponibilizado do Ava,
+      * pelos nós serem apenas números inteiros. contem() foi adicionado para busca.
+      */
 
      private static class Nodo {
           int elemento;
@@ -15,18 +18,6 @@ public class ListaEncadeada {
      private Nodo ultimo;
      private int tamanho;
 
-     public void insereInicio(int elemento) {
-          Nodo novo = new Nodo(elemento);
-          novo.proximo = primeiro;
-          primeiro = novo;
-
-          if (ultimo == null) {
-               ultimo = novo;
-          }
-          tamanho++;
-     }
-
-     // Método novo
      public boolean contem(int valor) {
           Nodo atual = primeiro;
           while (atual != null) {
@@ -36,19 +27,6 @@ public class ListaEncadeada {
                atual = atual.proximo;
           }
           return false;
-     }
-
-     public void removeInicio() {
-          if (primeiro == null) {
-               throw new NoSuchElementException("Lista vazia");
-          }
-
-          primeiro = primeiro.proximo;
-          tamanho--;
-
-          if (tamanho == 0) {
-               ultimo = null;
-          }
      }
 
      public void insereFinal(int elemento) {
@@ -63,62 +41,6 @@ public class ListaEncadeada {
           tamanho++;
      }
 
-     public void removeFinal() {
-          if (ultimo == null) {
-               throw new NoSuchElementException("Lista vazia");
-          }
-
-          if (primeiro == ultimo) {
-               primeiro = ultimo = null;
-          } else {
-               Nodo atual = primeiro;
-               while (atual.proximo != ultimo) {
-                    atual = atual.proximo;
-               }
-               atual.proximo = null;
-               ultimo = atual;
-          }
-          tamanho--;
-     }
-
-     public void inserePosicao(int elemento, int posicao) {
-          if (posicao < 0 || posicao > tamanho)
-               throw new IndexOutOfBoundsException("Posição inválida");
-
-          if (posicao == 0) {
-               insereInicio(elemento);
-          } else if (posicao == tamanho) {
-               insereFinal(elemento);
-          } else {
-               Nodo atual = primeiro;
-               for (int i = 0; i < posicao - 1; i++)
-                    atual = atual.proximo;
-
-               Nodo novo = new Nodo(elemento);
-               novo.proximo = atual.proximo;
-               atual.proximo = novo;
-               tamanho++;
-          }
-     }
-
-     public void removePosicao(int posicao) {
-          if (posicao < 0 || posicao >= tamanho)
-               throw new IndexOutOfBoundsException("Posição inválida");
-
-          if (posicao == 0) {
-               removeInicio();
-          } else if (posicao == tamanho - 1) {
-               removeFinal();
-          } else {
-               Nodo atual = primeiro;
-               for (int i = 0; i < posicao - 1; i++)
-                    atual = atual.proximo;
-
-               atual.proximo = atual.proximo.proximo;
-               tamanho--;
-          }
-     }
-
      public void imprimirLista() {
           Nodo atual = primeiro;
           while (atual != null) {
@@ -127,4 +49,21 @@ public class ListaEncadeada {
           }
           System.out.println();
      }
+
+     @Override
+     public String toString() {
+          String resultado = "";
+          Nodo atual = primeiro;
+
+          while (atual != null) {
+               resultado += atual.elemento;
+               if (atual.proximo != null) {
+                    resultado += " ";
+               }
+               atual = atual.proximo;
+          }
+
+          return resultado;
+     }
+
 }

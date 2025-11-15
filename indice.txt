@@ -1,0 +1,7 @@
+memória 1 7 10 13 20 25 30
+amigo ---
+tradição 9 10 17 24
+jardim 2
+beija-flores 17
+esquecimento 4
+cômoda 5

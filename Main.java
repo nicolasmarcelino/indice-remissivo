@@ -1,44 +1,68 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.Normalizer;
 
 public class Main {
      public static void main(String[] args) {
-          String caminho = "C:\\Projects\\indice-remissivo\\texto.txt";
+          String path_texto = "C:\\Projects\\indice-remissivo-main\\texto.txt";
+          String path_glossario = "C:\\Projects\\indice-remissivo-main\\palavras.txt";
 
           Hash tabela = new Hash();
 
-          int counter = 0;
+          try (BufferedReader reader = new BufferedReader(new FileReader(path_texto))) {
+               String linha;
+               int counter = 1;
 
-          try (BufferedReader reader = new BufferedReader(new FileReader(caminho))) {
+               while ((linha = reader.readLine()) != null) {
+                    String linha_normalizada = normaliza(linha);
+                    String[] palavras = linha_normalizada.split(" ");
 
-               String line;
-               // Lê até a última linha
-               while ((line = reader.readLine()) != null) {
-                    // Normaliza a linha
-                    String linha_normalizada = normaliza(line);
-
-                    // Separa as palavras e guarda em lista
-                    String[] palavras_da_linha = linha_normalizada.split(" ");
-
-                    for (String palavra : palavras_da_linha) {
-                         tabela.insere(palavra, (counter + 1));
+                    for (String palavra : palavras) {
+                         tabela.insere(palavra, counter);
                     }
 
-                    // Avança para a próxima linha
                     counter++;
                }
+          } catch (Exception e) {
+               System.out.println("Erro lendo texto.");
+          }
 
-          } catch (FileNotFoundException e) {
-               System.out.println("Arquivo não encontrado.");
-          } catch (IOException e) {
+          String[] palavrasIndice = glossario(path_glossario);
+
+          gerarIndiceRemissivo(tabela, palavrasIndice);
+     }
+
+     public static String[] glossario(String caminho) {
+          int linhas = 0;
+
+          try (BufferedReader reader = new BufferedReader(new FileReader(caminho))) {
+               while (reader.readLine() != null) {
+                    linhas++;
+               }
+          } catch (Exception e) {
+               System.out.println("Erro.");
+               return new String[0];
+          }
+
+          String[] palavras = new String[linhas];
+
+          try (BufferedReader reader = new BufferedReader(new FileReader(caminho))) {
+               String line;
+               int i = 0;
+
+               while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                    System.out.println(line.trim());
+                    palavras[i] = line.trim();
+                    i++;
+               }
+          } catch (Exception e) {
                System.out.println("Erro.");
           }
 
-          String[] palavrasIndice = { "calvo", "amigo", "chuva", "pré-anuncio", "beija-flor" };
-          gerarIndiceRemissivo(tabela, palavrasIndice);
+          return palavras;
      }
 
      public static String normaliza(String linha) {
@@ -58,16 +82,23 @@ public class Main {
      }
 
      public static void gerarIndiceRemissivo(Hash tabela, String[] palavrasIndice) {
-          for (String termoOriginal : palavrasIndice) {
-               String termoNormalizado = normaliza(termoOriginal);
-               Palavra p = tabela.busca(termoNormalizado);
+          try (FileWriter writer = new FileWriter("indice.txt")) {
 
-               if (p != null) {
-                    System.out.print(termoOriginal + " ");
-                    p.ocorrencias.imprimirLista();
-               } else {
-                    System.out.println(termoOriginal + " ---");
+               for (String termoOriginal : palavrasIndice) {
+                    String termoNormalizado = normaliza(termoOriginal);
+                    Palavra p = tabela.busca(termoNormalizado);
+
+                    if (p != null) {
+                         writer.write(termoOriginal + " ");
+                         String ocorrencias = p.ocorrencias.toString();
+                         writer.write(ocorrencias + "\n");
+                    } else {
+                         writer.write(termoOriginal + " ---\n");
+                    }
                }
+               System.out.println("Índice concluído.");
+          } catch (IOException e) {
+               System.out.println("Erro.");
           }
      }
 
