@@ -7,7 +7,7 @@ import java.text.Normalizer;
 public class Main {
      public static void main(String[] args) {
           String path_texto = "C:\\Projects\\indice-remissivo\\texto.txt";
-          String path_glossario = "C:\\Projects\\indice-remissivo\\palavras.txt";
+          String path_keywords = "C:\\Projects\\indice-remissivo\\palavras.txt";
 
           Hash tabela = new Hash();
 
@@ -29,40 +29,32 @@ public class Main {
                System.out.println("Erro lendo texto.");
           }
 
-          String[] palavrasIndice = glossario(path_glossario);
+          // Índice vir-a-ser
+          IndiceRemissivo toIndex = toIndex(path_keywords);
 
-          gerarIndiceRemissivo(tabela, palavrasIndice);
+          // Indexação
+          index(tabela, toIndex);
      }
 
-     public static String[] glossario(String caminho) {
-          int linhas = 0;
+     public static void index(Hash tabela, IndiceRemissivo keywords) {
+          keywords.percorrer(tabela);
+     }
 
-          try (BufferedReader reader = new BufferedReader(new FileReader(caminho))) {
-               while (reader.readLine() != null) {
-                    linhas++;
+     public static IndiceRemissivo toIndex(String path) {
+          IndiceRemissivo ls = new IndiceRemissivo();
+
+          try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+               String linha;
+
+               while ((linha = reader.readLine()) != null) {
+                    ls.inserir(linha.trim());
                }
+               
           } catch (Exception e) {
-               System.out.println("Erro.");
-               return new String[0];
+               System.out.println("Erro ao ler glossário.");
           }
 
-          String[] palavras = new String[linhas];
-
-          try (BufferedReader reader = new BufferedReader(new FileReader(caminho))) {
-               String line;
-               int i = 0;
-
-               while ((line = reader.readLine()) != null) {
-                    //System.out.println(line);
-                    //System.out.println(line.trim());
-                    palavras[i] = line.trim();
-                    i++;
-               }
-          } catch (Exception e) {
-               System.out.println("Erro.");
-          }
-
-          return palavras;
+          return ls;
      }
 
      public static String normaliza(String linha) {
@@ -79,27 +71,6 @@ public class Main {
           String txt_normalizado = txt_sem_pontuacao.toLowerCase();
 
           return txt_normalizado;
-     }
-
-     public static void gerarIndiceRemissivo(Hash tabela, String[] palavrasIndice) {
-          try (FileWriter writer = new FileWriter("indice.txt")) {
-
-               for (String termoOriginal : palavrasIndice) {
-                    String termoNormalizado = normaliza(termoOriginal);
-                    Palavra p = tabela.busca(termoNormalizado);
-
-                    if (p != null) {
-                         writer.write(termoOriginal + " ");
-                         String ocorrencias = p.ocorrencias.toString();
-                         writer.write(ocorrencias + "\n");
-                    } else {
-                         writer.write(termoOriginal + " ---\n");
-                    }
-               }
-               System.out.println("Índice concluído.");
-          } catch (IOException e) {
-               System.out.println("Erro.");
-          }
      }
 
 }
