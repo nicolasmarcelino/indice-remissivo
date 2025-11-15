@@ -6,8 +6,8 @@ import java.text.Normalizer;
 
 public class Main {
      public static void main(String[] args) {
-          String path_texto = "C:\\Projects\\indice-remissivo-main\\texto.txt";
-          String path_glossario = "C:\\Projects\\indice-remissivo-main\\palavras.txt";
+          String path_texto = "C:\\Projects\\indice-remissivo\\texto.txt";
+          String path_glossario = "C:\\Projects\\indice-remissivo\\palavras.txt";
 
           Hash tabela = new Hash();
 
@@ -53,8 +53,8 @@ public class Main {
                int i = 0;
 
                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                    System.out.println(line.trim());
+                    //System.out.println(line);
+                    //System.out.println(line.trim());
                     palavras[i] = line.trim();
                     i++;
                }
