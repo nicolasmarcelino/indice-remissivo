@@ -18,11 +18,15 @@ public class Main {
                int counter = 1;
 
                while ((linha = reader.readLine()) != null) {
+                    // Normaliza linha
                     String linha_normalizada = normaliza(linha);
+
+                    // Separa as palavras normalizadas
                     String[] palavras = linha_normalizada.split(" ");
 
                     // Inserção na hash -> árvores
                     for (String palavra : palavras) {
+                         // Insere a palavra e sua ocorrência nas estruturas
                          tabela.insere(palavra, counter);
                     }
 
