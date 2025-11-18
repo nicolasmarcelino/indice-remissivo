@@ -1,87 +1,44 @@
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.Normalizer;
-
-class No {
-    String valor;
-    No proximo;
-
-    No(String valor) {
-        this.valor = valor;
-        this.proximo = null;
-    }
-}
+import java.util.Arrays;
 
 public class IndiceRemissivo {
-    private No inicio;
 
-    public IndiceRemissivo() {
-        this.inicio = null;
-    }
+    /*
+     * Esta classe é responsável por receber uma lista de palavras-chaves
+     * e gerar um índice remissivo em um .txt.
+     */
 
-    public void inserir(String palavra) {
-        No novo = new No(palavra);
+    private String[] palavrasChave;
 
-        if (inicio == null) {
-            inicio = novo;
-            return;
-        }
+    public IndiceRemissivo(String[] palavrasChave) {
+        this.palavrasChave = palavrasChave;
 
-        No atual = inicio;
-        while (atual.proximo != null) {
-            atual = atual.proximo;
-        }
-
-        atual.proximo = novo;
+        Arrays.sort(this.palavrasChave);
     }
 
     public void percorrer(Hash tabela) {
         try (FileWriter writer = new FileWriter("indice.txt")) {
 
-            No atual = inicio;
-            while (atual != null) {
+            for (int i = 0; i < palavrasChave.length; i++) {
 
-                // termo original vem da lista
-                String termoOriginal = atual.valor;
+                String termoOriginal = palavrasChave[i];
+                String termoNormalizado = Main.normaliza(termoOriginal);
 
-                // normaliza
-                String termoNormalizado = normaliza(termoOriginal);
-
-                // busca na tabela
                 Palavra p = tabela.busca(termoNormalizado);
 
-                // escreve no arquivo
                 if (p != null) {
                     writer.write(termoOriginal + " ");
                     writer.write(p.ocorrencias.toString() + "\n");
                 } else {
                     writer.write(termoOriginal + " ---\n");
                 }
-
-                atual = atual.proximo;
             }
 
             System.out.println("Índice concluído.");
 
         } catch (IOException e) {
-            System.out.println("Erro.");
+            System.out.println("Erro ao gerar índice.");
         }
     }
-
-    public static String normaliza(String linha) {
-        // Separa caractere e acentuação
-        String txt_base = Normalizer.normalize(linha, Normalizer.Form.NFD);
-
-        // Remove acentuação
-        String txt_sem_acentos = txt_base.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-
-        // Remove pontuação
-        String txt_sem_pontuacao = txt_sem_acentos.replaceAll("\\p{Punct}", "");
-
-        // Converte tudo para minúsculas
-        String txt_normalizado = txt_sem_pontuacao.toLowerCase();
-
-        return txt_normalizado;
-    }
-
 }

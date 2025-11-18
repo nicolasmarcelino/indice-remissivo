@@ -4,14 +4,15 @@ import java.text.Normalizer;
 
 public class Main {
      public static void main(String[] args) {
-          // Define caminho do texto e da lista de palavras-chaves
+          
+          // Caminho do texto e das palavras-chaves
           String path_texto = "C:\\Projects\\indice-remissivo\\texto.txt";
           String path_keywords = "C:\\Projects\\indice-remissivo\\palavras.txt";
 
-          // Cria tabela
+          // Tabela hash com 26 buckets do tipo ArvoreBinariaBusca
           Hash tabela = new Hash();
 
-          // Lê o texto
+          // Leitura do texto
           try (BufferedReader reader = new BufferedReader(new FileReader(path_texto))) {
                String linha;
                int counter = 1;
@@ -23,6 +24,7 @@ public class Main {
                     // Separa as palavras normalizadas
                     String[] palavras = linha_normalizada.split(" ");
 
+                    // Inserção na hash -> árvores
                     for (String palavra : palavras) {
                          // Insere a palavra e sua ocorrência nas estruturas
                          tabela.insere(palavra, counter);
@@ -31,35 +33,30 @@ public class Main {
                     counter++;
                }
           } catch (Exception e) {
-               System.out.println("Erro lendo texto.");
+               System.out.println("Erro ao ler texto.");
           }
 
-          // Coleta as palavras-chaves
-          IndiceRemissivo palavras_chaves = coletarPalavrasChaves(path_keywords);
+          // Instância das palavra-chaves
+          String[] palavras_chaves = null;
 
-          // Cria index
-          criarIndice(tabela, palavras_chaves);
-     }
+          // Leitura das palavras-chaves (ex.: programming,programs,easy,by,human-engineered,and,be,to)
+          try (BufferedReader reader = new BufferedReader(new FileReader(path_keywords))) {
+               String linha = reader.readLine();
 
-     public static void criarIndice(Hash tabela, IndiceRemissivo keywords) {
-          keywords.percorrer(tabela);
-     }
-
-     public static IndiceRemissivo coletarPalavrasChaves(String path) {
-          IndiceRemissivo ls = new IndiceRemissivo();
-
-          try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
-               String linha;
-
-               while ((linha = reader.readLine()) != null) {
-                    ls.inserir(linha.trim());
+               if (linha != null) {
+                    palavras_chaves = linha.split(",");
                }
 
           } catch (Exception e) {
-               System.out.println("Erro ao ler glossário.");
+               System.out.println("Erro ao ler as palavras-chave.");
           }
 
-          return ls;
+          if (palavras_chaves != null) {
+               IndiceRemissivo indice = new IndiceRemissivo(palavras_chaves);
+               indice.percorrer(tabela);
+          } else {
+               System.out.println("Nenhuma palavra-chave carregada.");
+          }
      }
 
      public static String normaliza(String linha) {
